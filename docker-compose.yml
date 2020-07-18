@@ -1,0 +1,42 @@
+version: '3.3'
+
+services:
+  angular:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: angular-web
+    ports:
+      - "127.0.0.1:4200:4200"
+    environment:
+      - NODE_ENV=dev
+    volumes:
+      - .:/opt/app
+      - /opt/app/node_modules
+    links:
+      - express
+    depends_on:
+      - express
+  
+  express:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: angular-server
+    ports:
+      - "4000:4000"
+    links:
+      - db
+    depends_on:
+      - db
+ 
+  db:
+    image: mongo:latest
+    container_name: database
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+
+volumes:
+  mongodata:
